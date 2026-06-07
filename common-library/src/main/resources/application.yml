@@ -1,0 +1,11 @@
+
+jwt:
+  secret: ${JWT_SECRET_KEY:VGhpcyBpcyBhIHNlY3JldCBrZXkgZm9yIGRvY2VhaSB0aGF0IGlzIGV4YWN0bHkgNjQgYnl0ZXMgbG9uZw==}
+  expiration: 86400000
+
+server:
+  port: 8089
+
+spring:
+  application:
+    name: common-library

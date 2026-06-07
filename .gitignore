@@ -1,0 +1,23 @@
+# =========================================================
+# JAVA / MAVEN
+# =========================================================
+
+target/
+build/
+out/
+.cursor/
+
+*.class
+*.jar
+*.war
+*.ear
+
+.mvn/wrapper/maven-wrapper.jar
+
+# Logs
+*.log
+logs/
+
+.env
+.idea/
+.vscode/

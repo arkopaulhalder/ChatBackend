@@ -1,0 +1,12 @@
+docker exec -it chat_mongo mongosh \
+  -u root -p secret \
+  --authenticationDatabase admin \
+  --eval "
+    use chat_message_db;
+    print('Conversations:');
+    printjson(db.conversations.find().toArray());
+    print('Messages:');
+    printjson(db.messages.find().toArray());
+    print('Receipts:');
+    printjson(db.message_receipts.find().toArray());
+  "

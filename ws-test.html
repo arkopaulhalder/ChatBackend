@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head><title>WebSocket Test</title></head>
+<body>
+<h2>WebSocket Chat Test</h2>
+<div>
+    <input id="token" placeholder="Paste ACCESS_TOKEN here" style="width:500px"/>
+    <button onclick="connect()">Connect</button>
+    <button onclick="disconnect()">Disconnect</button>
+</div>
+<div>
+    <input id="convId" placeholder="CONVERSATION_ID"/>
+    <input id="msg" placeholder="Message text"/>
+    <button onclick="sendMessage()">Send</button>
+</div>
+<div id="log" style="border:1px solid #ccc; padding:10px; height:300px; overflow-y:auto; margin-top:10px; font-family:monospace;"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<script>
+    let stompClient = null;
+
+    function log(msg) {
+      const div = document.getElementById('log');
+      div.innerHTML += '<p>' + new Date().toISOString() + ' — ' + msg + '</p>';
+      div.scrollTop = div.scrollHeight;
+    }
+
+    function connect() {
+      const token = document.getElementById('token').value.trim();
+      const socket = new SockJS('http://localhost:8080/ws-chat');
+      stompClient = Stomp.over(socket);
+
+      stompClient.connect(
+        { 'Authorization': 'Bearer ' + token },
+        function(frame) {
+          log('Connected: ' + frame);
+
+          // Subscribe to personal message queue
+          stompClient.subscribe('/user/queue/messages', function(message) {
+            log('RECEIVED: ' + message.body);
+          });
+
+          log('Subscribed to /user/queue/messages');
+        },
+        function(error) {
+          log('ERROR: ' + error);
+        }
+      );
+    }
+
+    function sendMessage() {
+      const convId = document.getElementById('convId').value.trim();
+      const content = document.getElementById('msg').value.trim();
+      stompClient.send('/app/chat.send', {}, JSON.stringify({
+        conversationId: convId,
+        content: content
+      }));
+      log('SENT: ' + content);
+    }
+
+    function disconnect() {
+      if (stompClient) {
+        stompClient.disconnect();
+        log('Disconnected');
+      }
+    }
+</script>
+</body>
+</html>

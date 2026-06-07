@@ -1,0 +1,60 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: chat-service
+
+  data:
+    mongodb:
+      uri: mongodb://${MONGO_USER:root}:${MONGO_PASSWORD:secret}@${MONGO_HOST:localhost}:${MONGO_PORT:27017}/chat_message_db?authSource=admin
+      auto-index-creation: false
+
+  # MongoDB connection pool tuning
+  mongodb:
+    connection-pool:
+      max-wait-time: 2000
+      max-connection-idle-time: 600000    # 10 min max idle before the driver closes it cleanly
+      heartbeat-frequency: 10000          # the driver sends its own heartbeat every 10 seconds
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+    consumer:
+      group-id: chat-service-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "com.ChatSystem.common_library.event"
+
+        # Send heartbeat to broker every 3 seconds (default is 3 s, making explicit)
+        heartbeat.interval.ms: 3000
+
+        # If no heartbeat received in 30 seconds, consumer is considered dead
+        session.timeout.ms: 30000
+
+        # Max time between poll() calls before consumer is considered stuck
+        max.poll.interval.ms: 300000
+
+        # Keep connection alive with periodic metadata requests
+        connections.max.idle.ms: 540000
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://${EUREKA_HOST:localhost}:8761/eureka/
+  instance:
+    prefer-ip-address: true
+
+jwt:
+  secret: ${JWT_SECRET_KEY:VGhpcyBpcyBhIHNlY3JldCBrZXkgZm9yIGRvY2VhaSB0aGF0IGlzIGV4YWN0bHkgNjQgYnl0ZXMgbG9uZw==}
+
+logging:
+  level:
+    com.ChatSystem.ChatService: DEBUG
+    org.springframework.messaging: INFO

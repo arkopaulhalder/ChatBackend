@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: user-service
+  data:
+    mongodb:
+      uri: mongodb+srv://halderarkopaul:yUp0PQLWLbnP4HPZ@chatsystem.mebqsvi.mongodb.net/?retryWrites=true&w=majority&appName=ChatSystem
+      database: clinic_chat
+      auto-index-creation: true

@@ -1,0 +1,36 @@
+cd Desktop/ChatBackend
+
+MONGO_DB ->
+docker exec -it chat_mongo mongosh -u root -p secret --authenticationDatabase admin
+
+MY_SQL ->
+docker exec -it chat_mysql mysql -u root -psecret
+
+REDIS_CLI ->
+docker exec -it chat_redis redis-cli -a secret
+
+KAFKA ->
+
+# Get into Kafka container
+docker exec -it chat_kafka sh
+
+# List all topics
+kafka-topics --bootstrap-server localhost:9092 --list
+     OUTPUT:
+        __consumer_offsets
+        user.created
+
+# Read all messages ever published to user.created
+kafka-console-consumer \
+  --bootstrap-server localhost:9092 \
+  --topic user.created \
+  --from-beginning
+
+# Verify broker is healthy
+
+kafka-broker-api-versions --bootstrap-server localhost:9092
+# Should print an API version list.
+
+# Check Zookeeper has broker registered
+zookeeper-shell zookeeper:2181 ls /brokers/ids
+# Expected: [1]

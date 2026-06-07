@@ -1,0 +1,28 @@
+docker exec -it chat_kafka sh
+
+# Check user.created from registration
+kafka-console-consumer \
+  --bootstrap-server localhost:9092 \
+  --topic user.created \
+  --from-beginning
+
+# Check message.created from chat messages
+kafka-console-consumer \
+  --bootstrap-server localhost:9092 \
+  --topic message.created \
+  --from-beginning
+
+# Check message.delivered
+kafka-console-consumer \
+  --bootstrap-server localhost:9092 \
+  --topic message.delivered \
+  --from-beginning
+
+# Check message.seen
+kafka-console-consumer \
+  --bootstrap-server localhost:9092 \
+  --topic message.seen \
+  --from-beginning
+
+# List all topics that now exist
+kafka-topics --bootstrap-server localhost:9092 --list
